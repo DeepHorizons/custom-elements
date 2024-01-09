@@ -6,26 +6,22 @@ use custom_elements::{inject_stylesheet, CustomElement};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{window, HtmlElement};
-use yew::html::Scope;
 use yew::prelude::*;
 
 struct ComponentWrapper {
-    scope: Option<Scope<Model>>,
+    app: Option<AppHandle<Model>>,
 }
 
 impl ComponentWrapper {
     fn new() -> Self {
-        Self { scope: None }
+        Self { app: None }
     }
 }
 
 impl CustomElement for ComponentWrapper {
     fn inject_children(&mut self, this: &HtmlElement) {
-        yew::initialize();
-        let app = App::<Model>::new();
-        let scope = app.mount(this.clone().unchecked_into());
-        self.scope = Some(scope);
-        yew::run_loop();
+        let app = yew::Renderer::<Model>::with_root(this.clone().unchecked_into()).render();
+        self.app = Some(app);
 
         inject_stylesheet(&this, "/component_style.css");
     }
@@ -45,8 +41,8 @@ impl CustomElement for ComponentWrapper {
             "value" => {
                 if let Some(value) = new_value {
                     if let Ok(value) = value.parse::<i64>() {
-                        if let Some(scope) = &self.scope {
-                            scope.send_message(Msg::Set(value));
+                        if let Some(app) = &self.app {
+                            app.send_message(Msg::Set(value));
                         }
                     }
                 }
@@ -62,7 +58,7 @@ impl Default for ComponentWrapper {
     }
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(start)]
 pub fn run() {
     ComponentWrapper::define("ce-yew");
 }

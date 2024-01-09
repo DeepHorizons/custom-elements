@@ -4,6 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Custom Elements - Yew</title>
+		<!-- XXX wasm-pack init code -->
     <script type="module">
       import init, { run } from './pkg/yew_web_component.js';
       async function main() {
@@ -12,6 +13,8 @@
       }
       main();
     </script>
+		<!-- XXX trunk will run the init() function for us, and the wasm_bindgen(start) function runs the run() function -->
+		<link data-trunk rel="copy-file" href="./component_style.css" />
     <style>
       /* This will only affect the paragraph outside the components, not the counts within. */
       p { color: blue; }
